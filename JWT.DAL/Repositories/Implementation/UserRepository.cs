@@ -1,6 +1,7 @@
 using JWT.DAL.Context;
 using JWT.DAL.Entities;
 using JWT.DAL.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace JWT.DAL.Repositories.Implementation
 {
@@ -9,15 +10,16 @@ namespace JWT.DAL.Repositories.Implementation
         public UserRepository(AppDbContext context) : base(context)
         {
         }
-
-        public Task<ApplicationUser?> GetByUserNameAsync(string userName)
+        
+        public async Task<ApplicationUser?> GetByUserNameAsync(string userName)
         {
-            throw new NotImplementedException();
+            return await Context.Set<ApplicationUser>().FirstOrDefaultAsync(u => u.UserName == userName);
         }
 
-        public Task<ApplicationUser?> GetByEmailAsync(string email)
+        public async Task<ApplicationUser?> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await Context.Set<ApplicationUser>()
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

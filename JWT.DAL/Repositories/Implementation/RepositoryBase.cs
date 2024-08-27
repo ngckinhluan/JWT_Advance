@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JWT.DAL.Repositories.Implementation;
 
-public class RepositoryBase<T>(AppDbContext context) : IRepositoryBase<T>
+public abstract class RepositoryBase<T>(AppDbContext context) : IRepositoryBase<T>
     where T : class
 {
-    private AppDbContext Context => context;
+    // Protected property to access the context
+    protected AppDbContext Context  => context;
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
@@ -20,11 +21,10 @@ public class RepositoryBase<T>(AppDbContext context) : IRepositoryBase<T>
         return await Context.Set<T>().FindAsync(id);
     }
 
-    public async Task<T> AddAsync(T entity)
+    public async Task AddAsync(T entity)
     {
         await Context.Set<T>().AddAsync(entity);
         await Context.SaveChangesAsync();
-        return entity;
     }
 
     public async Task UpdateAsync(T entity)

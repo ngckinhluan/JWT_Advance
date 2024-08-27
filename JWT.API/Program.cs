@@ -1,4 +1,5 @@
 
+using JWT.API.Extensions;
 using JWT.DAL.Context;
 using JWT.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,7 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddAuthorization();
-
+        builder.Services.ConfigureRepositoryWrapper();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
