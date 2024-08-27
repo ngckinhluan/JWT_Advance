@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jwt.API", "Jwt.API\Jwt.API.csproj", "{A1BB8E46-C52E-4F92-84A3-41914C819D32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWT.DAL", "JWT.DAL\JWT.DAL.csproj", "{D44EC62F-9024-4138-B52F-6F27E4E86B3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWT.BLL", "JWT.BLL\JWT.BLL.csproj", "{5711B178-4642-4ECE-94AE-285E9E6DFDEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1BB8E46-C52E-4F92-84A3-41914C819D32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1BB8E46-C52E-4F92-84A3-41914C819D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1BB8E46-C52E-4F92-84A3-41914C819D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1BB8E46-C52E-4F92-84A3-41914C819D32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44EC62F-9024-4138-B52F-6F27E4E86B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44EC62F-9024-4138-B52F-6F27E4E86B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44EC62F-9024-4138-B52F-6F27E4E86B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44EC62F-9024-4138-B52F-6F27E4E86B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5711B178-4642-4ECE-94AE-285E9E6DFDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5711B178-4642-4ECE-94AE-285E9E6DFDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5711B178-4642-4ECE-94AE-285E9E6DFDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5711B178-4642-4ECE-94AE-285E9E6DFDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
