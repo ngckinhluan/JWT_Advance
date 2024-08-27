@@ -12,3 +12,4 @@ D:\Code\JwtAdvance\JWT.DAL\obj\Debug\net8.0\refint\JWT.DAL.dll
 D:\Code\JwtAdvance\JWT.DAL\obj\Debug\net8.0\JWT.DAL.pdb
 D:\Code\JwtAdvance\JWT.DAL\obj\Debug\net8.0\JWT.DAL.genruntimeconfig.cache
 D:\Code\JwtAdvance\JWT.DAL\obj\Debug\net8.0\ref\JWT.DAL.dll
+D:\Code\JwtAdvance\JWT.DAL\obj\Debug\net8.0\JWT.DAL.sourcelink.json
