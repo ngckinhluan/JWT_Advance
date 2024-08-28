@@ -17,6 +17,9 @@ namespace BusinessObjects.Entities
         public int Yob  { get; set; }
         [StringLength(50)]
         public string? Address { get; set; }
+        public string? Phone { get; set; }
+        
+        public bool IsDeleted { get; set; } 
 
         // Navigation property
         public virtual IdentityUser? User { get; set; }
