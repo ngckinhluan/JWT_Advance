@@ -37,7 +37,7 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         {
             throw new Exception("User not found");
         }
-        await Repository.DeleteAsync(userId);
+        await Repository.DeleteAsync(user);
     }
 
     public async Task<UserRequestDto> CreateUserAsync(UserRequestDto userRequestDto)
