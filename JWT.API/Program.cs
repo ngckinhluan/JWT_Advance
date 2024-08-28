@@ -18,6 +18,9 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
+        // Configure AutoMapper
+        builder.Services.AddAutoMapper(typeof(Program)); 
+        
         #region Swagger
         builder.Services.AddSwaggerGen(c =>
         {
@@ -87,6 +90,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseAuthorization();
+        app.UseAuthentication();
         app.Run();
     }
 }

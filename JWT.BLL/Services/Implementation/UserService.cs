@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using JWT.BLL.Services.Interface;
 using JWT.DAL.DTO.RequestDTO;
+using JWT.DAL.DTO.ResponseDTO;
 using JWT.DAL.Entities;
 using JWT.DAL.Repositories.Interface;
 
@@ -40,12 +41,13 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         await Repository.DeleteAsync(user);
     }
 
-    public async Task<UserRequestDto> CreateUserAsync(UserRequestDto userRequestDto)
+    public async Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto)
     {
         var user = Mapper.Map<ApplicationUser>(userRequestDto);
-        var createdUser = await Repository.AddAsync(user);
-        return Mapper.Map<UserRequestDto>(createdUser);
+        await Repository.AddAsync(user);
+        return Mapper.Map<UserResponseDto>(user);
     }
+
 
     public async Task<IEnumerable<ApplicationUser>> FindUsersAsync(Expression<Func<ApplicationUser, bool>> predicate)
     {

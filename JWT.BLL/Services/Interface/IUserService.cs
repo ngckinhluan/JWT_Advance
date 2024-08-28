@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using JWT.DAL.DTO.RequestDTO;
+using JWT.DAL.DTO.ResponseDTO;
 using JWT.DAL.Entities;
 
 namespace JWT.BLL.Services.Interface;
@@ -12,6 +13,6 @@ public interface IUserService
     Task<ApplicationUser?> GetUserByEmailAsync(string email);
     Task UpdateUserAsync(Guid userId, UserRequestDto updateUserDto);
     Task DeleteUserAsync(Guid userId);
-    Task<UserRequestDto> CreateUserAsync(UserRequestDto userRequestDto);
+    Task<UserResponseDto> CreateUserAsync(UserRequestDto userRequestDto);
     Task<IEnumerable<ApplicationUser>> FindUsersAsync(Expression<Func<ApplicationUser, bool>> predicate);
 }
