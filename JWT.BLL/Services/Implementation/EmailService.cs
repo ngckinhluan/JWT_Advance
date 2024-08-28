@@ -16,7 +16,7 @@ public class EmailService(string smtpServer, int smtpPort, string smtpUsername, 
     {
         var mailMessage = new MailMessage
         {
-            From = new MailAddress(_smtpUsername),
+            From = new MailAddress(_smtpUsername, "JWT Test Project"),
             Subject = subject,
             Body = body,
             IsBodyHtml = true

@@ -1,5 +1,6 @@
 using JWT.BLL.Services.Implementation;
 using JWT.BLL.Services.Interface;
+using JWT.DAL.Entities;
 using JWT.DAL.Repositories.Implementation;
 using JWT.DAL.Repositories.Interface;
 using NuGet.Protocol.Core.Types;
@@ -22,11 +23,15 @@ public static class ServiceExtension
         #region Service
         serviceCollection.AddScoped<IAuthService, AuthService>();
         serviceCollection.AddScoped<ITokenService, TokenService>();
-        serviceCollection.AddScoped<IEmailService, EmailService>();
         serviceCollection.AddScoped<IUserService, UserService>();
         #endregion
+        
+        serviceCollection.AddTransient<IEmailService, EmailService>();
+
         return serviceCollection;
     }
+    
+    
     
     public static void ConfigureCors(this IServiceCollection services)
     {
@@ -39,5 +44,13 @@ public static class ServiceExtension
                     .AllowAnyHeader();
             });
         });
+    }
+    
+    public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
+    {
+        var mailSettings = configuration.GetSection("MailSettings").Get<MailSetting>();
+        services.AddScoped<IEmailService>(provider =>
+            new EmailService(mailSettings.Host, mailSettings.Port, mailSettings.Mail, mailSettings.Password));
+
     }
 }

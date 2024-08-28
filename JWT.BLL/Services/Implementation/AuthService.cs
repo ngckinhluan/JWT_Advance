@@ -12,14 +12,12 @@ namespace JWT.BLL.Services.Implementation;
 
 public class AuthService(
     IUserRepository repository,
-    IAuthService service,
     UserManager<ApplicationUser> userManager,
     ITokenService tokenService,
     IEmailService emailService)
     : IAuthService
 {
     private IUserRepository Repository => repository;
-    private IAuthService Service => service;
     private UserManager<ApplicationUser> UserManager => userManager;
     private ITokenService TokenService => tokenService;
     private IEmailService EmailService => emailService;

@@ -1,3 +1,4 @@
+using System.Configuration;
 using JWT.API.Extensions;
 using JWT.DAL.Context;
 using JWT.DAL.Entities;
@@ -11,7 +12,6 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
         // Add services to the container.
         builder.Services.AddAuthorization();
         builder.Services.ConfigureRepositoryWrapper();
@@ -61,6 +61,7 @@ public class Program
         
         builder.Services.ConfigureRepositoryWrapper();
         builder.Services.AddScopedService();
+        builder.Services.ConfigureEmailService(builder.Configuration);
 
         #region CORS
         builder.Services.ConfigureCors();
