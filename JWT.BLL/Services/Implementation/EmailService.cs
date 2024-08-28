@@ -5,36 +5,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace JWT.BLL.Services.Implementation;
 
-public class EmailService(string smtpServer, int smtpPort, string smtpUsername, string smtpPassword, IConfiguration configuration)
-    : IEmailService
+public class EmailService(IConfiguration configuration) : IEmailService
 {
-    private readonly string _smtpServer = smtpServer;
-    private readonly int _smtpPort = smtpPort;
-    private readonly string _smtpUsername = smtpUsername;
-    private readonly string _smtpPassword = smtpPassword;
-    private IConfiguration Configuration => configuration;
+    private readonly string? _smtpServer = configuration["MailSettings:Host"];
+    private readonly int _smtpPort = int.Parse(configuration["MailSettings:Port"] ?? string.Empty);
+    private readonly string? _smtpUsername = configuration["MailSettings:Mail"];
+    private readonly string? _smtpPassword = configuration["MailSettings:Password"];
 
     public async Task SendEmailAsync(string toEmail, string subject, string emailContent)
     {
-        var fromEmail = Configuration["Mail"];
-        var displayName = Configuration["DisplayName"];
-        var password = Configuration["Password"];
-        var host = Configuration["Host"];
-        var port = int.Parse(Configuration["Port"]);
-
-        using (var client = new SmtpClient(host, port))
+        using (var client = new SmtpClient(_smtpServer, _smtpPort))
         {
-            client.Credentials = new NetworkCredential(fromEmail, password);
+            client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
             client.EnableSsl = true;
 
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(fromEmail, displayName),
+                From = new MailAddress(_smtpUsername),
                 Subject = subject,
                 Body = emailContent,
                 IsBodyHtml = true,
             };
-
             mailMessage.To.Add(toEmail);
             await client.SendMailAsync(mailMessage);
         }

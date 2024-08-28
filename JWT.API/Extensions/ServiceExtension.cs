@@ -25,7 +25,6 @@ public static class ServiceExtension
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IUserService, UserService>();
         #endregion
-        
         serviceCollection.AddTransient<IEmailService, EmailService>();
 
         return serviceCollection;
@@ -44,13 +43,5 @@ public static class ServiceExtension
                     .AllowAnyHeader();
             });
         });
-    }
-    
-    public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
-    {
-        var mailSettings = configuration.GetSection("MailSettings").Get<MailSetting>();
-        services.AddScoped<IEmailService>(provider =>
-            new EmailService(mailSettings.Host, mailSettings.Port, mailSettings.Mail, mailSettings.Password));
-
     }
 }

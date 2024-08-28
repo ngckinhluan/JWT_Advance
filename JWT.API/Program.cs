@@ -61,7 +61,6 @@ public class Program
         
         builder.Services.ConfigureRepositoryWrapper();
         builder.Services.AddScopedService();
-        builder.Services.ConfigureEmailService(builder.Configuration);
 
         #region CORS
         builder.Services.ConfigureCors();
