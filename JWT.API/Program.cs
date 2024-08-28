@@ -32,7 +32,15 @@ public class Program
         builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
             options.TokenLifespan = TimeSpan.FromHours(24));
         #endregion
-       
+        
+        // Configure Identity
+        // builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        //     {
+        //         options.Lockout.MaxFailedAccessAttempts = 5; 
+        //     })
+        //     .AddEntityFrameworkStores<AppDbContext>()
+        //     .AddDefaultTokenProviders();
+        //
         
 
         var app = builder.Build();

@@ -21,10 +21,11 @@ public abstract class RepositoryBase<T>(AppDbContext context) : IRepositoryBase<
         return await Context.Set<T>().FindAsync(id);
     }
 
-    public async Task AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         await Context.Set<T>().AddAsync(entity);
         await Context.SaveChangesAsync();
+        return entity;
     }
 
     public async Task UpdateAsync(T entity)
@@ -35,8 +36,12 @@ public abstract class RepositoryBase<T>(AppDbContext context) : IRepositoryBase<
 
     public async Task DeleteAsync(T id)
     {
-        Context.Set<T>().Remove(id);
-        await Context.SaveChangesAsync();
+        var entity = await Context.Set<T>().FindAsync(id);
+        if (entity != null)
+        {
+            Context.Set<T>().Remove(entity);
+            await Context.SaveChangesAsync();
+        }
     }
 
     public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)

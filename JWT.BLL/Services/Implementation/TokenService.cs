@@ -22,28 +22,30 @@ public class TokenService : ITokenService
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Role, role),
-            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),  
+            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.HasValue 
                 ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") 
-                : string.Empty),           
-            new Claim("FullName", user.Fullname ?? string.Empty),  // Handle null values if necessary
-            new Claim("Age", user.Age.ToString())
+                : string.Empty),
+            new Claim("FullName", user.Fullname ?? string.Empty),
+            new Claim("Age", user.Age.HasValue ? user.Age.Value.ToString() : string.Empty)
         };
-
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(1),  
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            Expires = DateTime.UtcNow.AddHours(1), 
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         };
+
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
 
     public string GenerateRefreshToken()
     {

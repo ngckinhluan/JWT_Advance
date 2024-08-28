@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JWT.DAL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7b8613cb1f8e47d991337b9e72da354c661e44f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b49ce533cac19bd3982ae7bb3da723873cf83efb")]
 [assembly: System.Reflection.AssemblyProductAttribute("JWT.DAL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("JWT.DAL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
