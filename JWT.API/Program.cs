@@ -58,6 +58,14 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("jwt")));
 
         #endregion
+        
+        builder.Services.ConfigureRepositoryWrapper();
+        builder.Services.AddScopedService();
+
+        #region CORS
+        builder.Services.ConfigureCors();
+        #endregion
+        
 
         #region Configure Identity
 
@@ -87,7 +95,17 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
+        
+        # region Swagger Dark Theme
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth-API-V1");
+            c.InjectStylesheet("/swagger-ui/SwaggerDark.css");
+            c.RoutePrefix = "swagger";
+        });
+        # endregion
+        app.UseCors();
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.UseAuthentication();

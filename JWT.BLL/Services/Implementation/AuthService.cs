@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using JWT.BLL.Helpers;
 using JWT.BLL.Services.Interface;
 using JWT.DAL.DTO.RequestDTO;
 using JWT.DAL.DTO.ResponseDTO;
@@ -13,14 +14,15 @@ public class AuthService(
     IUserRepository repository,
     IAuthService service,
     UserManager<ApplicationUser> userManager,
-    ITokenService tokenService)
+    ITokenService tokenService,
+    IEmailService emailService)
     : IAuthService
 {
     private IUserRepository Repository => repository;
     private IAuthService Service => service;
     private UserManager<ApplicationUser> UserManager => userManager;
     private ITokenService TokenService => tokenService;
-
+    private IEmailService EmailService => emailService;
     public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto model)
     {
         var user = new ApplicationUser
@@ -100,6 +102,35 @@ public class AuthService(
             Email = user.Email,
             AccessToken = newToken
         };
+    }
+    
+    public async Task ForgotPasswordAsync(string email)
+    {
+        var user = await UserManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+        var token = TokenGenerator.GenerateToken(); 
+        var callbackUrl = $"https://yourapp.com/reset-password?token={token}&email={email}";
+        await EmailService.SendEmailAsync(
+            email,
+            "Password Reset Request",
+            $"Please reset your password by clicking <a href='{callbackUrl}'>here</a>.");
+    }
+    
+    public async Task ResetPasswordAsync(string email, string token, string password)
+    {
+        var user = await UserManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+        var result = await UserManager.ResetPasswordAsync(user, token, password);
+        if (!result.Succeeded)
+        {
+            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
     }
 
     public async Task LogoutAsync(string userId)
