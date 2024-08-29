@@ -13,5 +13,4 @@ public class UserDetailRepository(UserDetailDao userDetailDao) : IUserDetailRepo
     public async Task DeleteAsync(string id) => await UserDetailDao.DeleteUserDetailAsync(id);
     public Task<IEnumerable<UserDetail>> FindAsync(Func<UserDetail, bool> predicate) => UserDetailDao.FindUserDetailsAsync(predicate);
     public async Task UpdateAsync(string id, UserDetail entity) => await UserDetailDao.UpdateUserDetailAsync(id, entity);
-    
 }

@@ -26,26 +26,24 @@ public class UserDetailService(IUserDetailRepository userDetailRepository, IMapp
         return responseUserDetail;
     }
 
-    public async Task<UserDetailResponseDto> CreateAsync(UserDetailRequestDto entity)
+    public async Task CreateAsync(UserDetailRequestDto entity)
     {
         var userDetail = Mapper.Map<UserDetail>(entity);
         await UserDetailRepository.CreateAsync(userDetail);
-        var responseUserDetail = Mapper.Map<UserDetailResponseDto>(userDetail);
-        return responseUserDetail;
     }
 
-    public Task UpdateAsync(string id, UserDetailRequestDto entity)
+    public async Task UpdateAsync(string id, UserDetailRequestDto entity)
     {
-        throw new NotImplementedException();
+        var customer = Mapper.Map<UserDetail>(entity);
+        await UserDetailRepository.UpdateAsync(id, customer);
     }
 
-    public Task DeleteAsync(string id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task DeleteAsync(string id) => await UserDetailRepository.DeleteAsync(id);
 
-    public Task<IEnumerable<UserDetailResponseDto>> FindAsync(Func<UserDetail, bool> predicate)
+    public async Task<IEnumerable<UserDetailResponseDto>> FindAsync(Func<UserDetail, bool> predicate)
     {
-        throw new NotImplementedException();
+        var userDetails = await UserDetailRepository.FindAsync(predicate);
+        var responseUserDetails = Mapper.Map<IEnumerable<UserDetailResponseDto>>(userDetails);
+        return responseUserDetails;
     }
 }

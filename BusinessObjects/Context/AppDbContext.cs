@@ -20,20 +20,20 @@ namespace BusinessObjects.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserDetail>(entity =>
-            {
-                entity.HasKey(e => e.UserId);
-                entity.Property(e => e.UserId).IsRequired();
-                entity.Property(e => e.FullName).HasMaxLength(50);
-                entity.Property(e => e.Address).HasMaxLength(50);
-
-                // Relationship
-                entity.HasOne(e => e.User)
-                    .WithOne()
-                    .HasForeignKey<UserDetail>(e => e.UserId)
-                    .IsRequired();
-            });
+            // base.OnModelCreating(modelBuilder);
+            // modelBuilder.Entity<UserDetail>(entity =>
+            // {
+            //     entity.HasKey(e => e.UserId);
+            //     entity.Property(e => e.UserId).IsRequired();
+            //     entity.Property(e => e.FullName).HasMaxLength(50);
+            //     entity.Property(e => e.Address).HasMaxLength(50);
+            //
+            //     // Relationship
+            //     entity.HasOne(e => e.User)
+            //         .WithOne()
+            //         .HasForeignKey<UserDetail>(e => e.UserId)
+            //         .IsRequired();
+            // });
 
         }
         private string? GetConnectionString()
@@ -41,14 +41,14 @@ namespace BusinessObjects.Context
             IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", true, true).Build();
-            return configuration["ConnectionStrings:DefaultConnectionStringDB"];
+            return configuration["ConnectionStrings:JWT"];
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(GetConnectionString());
+                optionsBuilder.UseSqlServer("Server=(local);Database=JWT;uid=sa;pwd=12345;TrustServerCertificate=True;");
             }
         }
 

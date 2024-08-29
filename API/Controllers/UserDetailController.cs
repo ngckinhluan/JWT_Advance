@@ -1,82 +1,48 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BusinessObjects.Context;
-using BusinessObjects.Entities;
-using Services.Implementation;
+using BusinessObjects.DTO.Request;
+using BusinessObjects.DTO.Response;
 using Services.Interface;
 
 namespace API.Controllers
 {
-    [Route("api/user-detail")]
+    [Route("api/userDetail")]
     [ApiController]
-    public class UserDetailController(IUserDetailService userDetailService) : ControllerBase
+    public class UserDetailController(IUserDetailService userDetailService, IMapper mapper) : ControllerBase
     {
+        private IMapper Mapper => mapper;
         private IUserDetailService UserDetailService => userDetailService;
 
         [HttpGet]
-        public async Task<IActionResult> GetUserDetail()
+        public async Task<IActionResult> GetUserDetails()
         {
             var userDetail = await UserDetailService.GetAllAsync();
-            if (userDetail == null)
-            {
-                return NotFound();
-            }
             return Ok(userDetail);
         }
 
-        // GET: api/UserDetail/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserDetail(string id)
+        [HttpGet("{id}", Name = "GetUserDetailById")]
+        public async Task<IActionResult> GetUserDetailById(string id)
         {
             var userDetail = await UserDetailService.GetByIdAsync(id);
-            if (userDetail == null)
-            {
-                return NotFound();
-            }
+            if (userDetail == null) return NotFound();
             return Ok(userDetail);
         }
-       
-        //
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutUserDetail(string id, UserDetail userDetail)
-        // {
-        //     if (id != userDetail.UserId)
-        //     {
-        //         return BadRequest();
-        //     }
-        //
-        //     try
-        //     {
-        //         await UserDetailService.UpdateAsync(userDetail);
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!UserDetailExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-        //
-        //     return NoContent();
-        // }
-
 
         [HttpPost]
-        public async Task<IActionResult> PostUserDetail(UserDetail userDetail)
+        public async Task<IActionResult> CreateUserDetail(UserDetailRequestDto userDetailRequest)
         {
-            await UserDetailService.CreateAsync(userDetail);
-            return CreatedAtAction("GetUserDetail", new { id = userDetail.UserId }, userDetail);
+            await UserDetailService.CreateAsync(userDetailRequest);
+            var result = Mapper.Map<UserDetailResponseDto>(userDetailRequest);
+            return CreatedAtRoute("GetUserDetailById", new {id = result.UserId}, userDetailRequest);
         }
-        
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUserDetail(string id, UserDetailRequestDto userDetailRequest)
+        {
+            await UserDetailService.UpdateAsync(id, userDetailRequest);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserDetail(string id)
         {
@@ -84,15 +50,22 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpGet("find")]
-        public async Task<IActionResult> FindUserDetail([FromQuery] string search)
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUserDetail(string name)
         {
-            var userDetail = await UserDetailService.FindAsync(ud => ud.FullName.Contains(search) || ud.Address.Contains(search) || ud.Phone.Contains(search));
-            if (userDetail == null)
+            if (string.IsNullOrEmpty(name))
             {
-                return NotFound();
+                return BadRequest("Search term cannot be null or empty.");
             }
-            return Ok(userDetail);
+            var userDetails = await UserDetailService.FindAsync(x =>
+                x.FullName.Contains(name, StringComparison.OrdinalIgnoreCase) ||
+                x.Address.Contains(name, StringComparison.OrdinalIgnoreCase) ||
+                x.Phone.Contains(name, StringComparison.OrdinalIgnoreCase));
+            if (userDetails == null || !userDetails.Any())
+            {
+                return NotFound("No user details found matching the search criteria.");
+            }
+            return Ok(userDetails);
         }
     }
 }
