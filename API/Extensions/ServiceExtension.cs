@@ -1,7 +1,8 @@
-using BusinessObjects.DTO.RequestDTO;
 using DAOs;
 using Repositories.Implementation;
 using Repositories.Interface;
+using Services.Implementation;
+using Services.Interface;
 
 namespace API.Extensions;
 
@@ -15,6 +16,10 @@ public static class ServiceExtension
 
         #region Repositories
         serviceCollection.AddScoped<IUserDetailRepository, UserDetailRepository>();
+        #endregion
+
+        #region Services
+        serviceCollection.AddScoped<IUserDetailService, UserDetailService>();
         #endregion
 
         return serviceCollection;

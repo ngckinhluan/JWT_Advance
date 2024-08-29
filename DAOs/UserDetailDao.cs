@@ -25,7 +25,7 @@ namespace DAOs
             await Context.SaveChangesAsync();
         }
 
-        public async Task UpdateUserDetailAsync(UserDetail userDetail)
+        public async Task UpdateUserDetailAsync(string id, UserDetail userDetail)
         {
             var userDetailToUpdate = await Context.UserDetail
                 .Where(ud => ud.UserId == userDetail.UserId && !ud.IsDeleted) 
@@ -34,10 +34,9 @@ namespace DAOs
             {
                 throw new Exception("UserDetail not found");
             }
-            userDetailToUpdate.FullName = userDetail.FullName;
-            userDetailToUpdate.Address = userDetail.Address;
-            userDetailToUpdate.Yob = userDetail.Yob;
-            userDetailToUpdate.Phone = userDetail.Phone;
+            userDetailToUpdate.UserId = id;
+            Context.Entry(userDetailToUpdate).CurrentValues.SetValues(userDetail);
+            Context.Entry(userDetailToUpdate).State = EntityState.Modified;
             await Context.SaveChangesAsync();
         }
 
@@ -53,13 +52,6 @@ namespace DAOs
             userDetail.IsDeleted = true;
             await Context.SaveChangesAsync();
         }
-
-        public async Task<bool> UserDetailExists(string id)
-        {
-            return await Context.UserDetail
-                .AnyAsync(ud => ud.UserId == id && !ud.IsDeleted); 
-        }
-
         public async Task<IEnumerable<UserDetail>> FindUserDetailsAsync(Func<UserDetail, bool> predicate)
         {
             var allUserDetails = await Context.UserDetail
