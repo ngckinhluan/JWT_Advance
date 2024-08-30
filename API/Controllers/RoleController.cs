@@ -1,21 +1,16 @@
-using System.Linq.Expressions;
 using AutoMapper;
 using BusinessObjects.DTO.Request;
-using BusinessObjects.DTO.Response;
-using BusinessObjects.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.Implementation;
 using Services.Interface;
 
 namespace API.Controllers
 {
     [Route("api/role")]
     [ApiController]
-    public class RoleController(IRoleService service, IMapper mapper) : ControllerBase
+    public class RoleController(IRoleService service) : ControllerBase
     {
         private IRoleService RoleService => service;
-        private IMapper Mapper => mapper;
+        // private IMapper Mapper => mapper;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -28,10 +23,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetById(string id)
         {
             var role = await RoleService.GetByIdAsync(id);
-            if (role == null)
-            {
-                return NotFound(new { message = "Role not found." });
-            }
             return Ok(role);
         }
 
@@ -43,9 +34,9 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] RoleRequestDto roleDto)
+        public async Task<IActionResult> Update([FromBody] RoleRequestDto roleDto, string id)
         {
-            await RoleService.UpdateAsync(roleDto);
+            await RoleService.UpdateAsync(id, roleDto);
             return NoContent();
         }
 

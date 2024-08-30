@@ -33,14 +33,8 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         return Repository.CreateAsync(user);
     }
 
-    public Task UpdateAsync(UserRequestDto entity)
-    {
-        var user = Mapper.Map<User>(entity);
-        return Repository.UpdateAsync(user);
-    }
-
+    public async Task UpdateAsync(string id, UserRequestDto entity) => await Repository.UpdateAsync(id, Mapper.Map<User>(entity));
     public Task DeleteAsync(string id) => Repository.DeleteAsync(id);
-
     public async Task<IEnumerable<UserResponseDto?>?> FindAsync(Expression<Func<User, bool>> query)
     {
         var users = await Repository.FindAsync(query);

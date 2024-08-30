@@ -15,7 +15,7 @@ public class RoleRepository(RoleDao roleDao) : IRoleRepository
 
     public async Task CreateAsync(Role entity) => await RoleDao.CreateRoleAsync(entity);
 
-    public async Task UpdateAsync(Role entity) => await RoleDao.UpdateRoleAsync(entity);
+    public async Task UpdateAsync(string id, Role entity) => await RoleDao.UpdateRoleAsync(id, entity);
 
     public async Task DeleteAsync(string id) => await RoleDao.DeleteRoleAsync(id);
 

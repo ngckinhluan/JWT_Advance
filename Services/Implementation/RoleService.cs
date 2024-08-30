@@ -3,6 +3,7 @@ using AutoMapper;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using Repositories.Implementation;
 using Repositories.Interface;
 using Services.Interface;
 
@@ -12,7 +13,7 @@ public class RoleService(IRoleRepository repository, IMapper mapper) : IRoleServ
 {
     private IRoleRepository Repository => repository;
     private IMapper Mapper => mapper;
-    
+
     public async Task<RoleResponseDto> GetByIdAsync(string id)
     {
         var role = await Repository.GetByIdAsync(id);
@@ -33,14 +34,11 @@ public class RoleService(IRoleRepository repository, IMapper mapper) : IRoleServ
         await Repository.CreateAsync(role);
     }
 
-    public async Task UpdateAsync(RoleRequestDto entity)
-    {
-        var role = Mapper.Map<Role>(entity);
-        await Repository.UpdateAsync(role);
-    }
+    public async Task UpdateAsync(string id, RoleRequestDto entity) =>
+        await Repository.UpdateAsync(id, Mapper.Map<Role>(entity));
 
     public async Task DeleteAsync(string id) => await Repository.DeleteAsync(id);
-    
+
     public async Task<IEnumerable<RoleResponseDto?>?> FindAsync(Expression<Func<Role, bool>> query)
     {
         var result = await Repository.FindAsync(query);

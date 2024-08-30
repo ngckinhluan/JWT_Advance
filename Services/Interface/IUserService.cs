@@ -10,7 +10,7 @@ public interface IUserService
     Task<UserResponseDto> GetByIdAsync(string id);
     Task<IEnumerable<UserResponseDto?>?> GetAllAsync();
     Task CreateAsync(UserRequestDto entity);
-    Task UpdateAsync(UserRequestDto entity);
+    Task UpdateAsync(string id, UserRequestDto entity);
     Task DeleteAsync(string id);
     Task<IEnumerable<UserResponseDto?>?> FindAsync(Expression<Func<User, bool>> query);
 }

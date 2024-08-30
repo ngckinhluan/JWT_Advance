@@ -11,11 +11,10 @@ namespace API.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController(IUserService userService, IMapper mapper) : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
         private IUserService UserService => userService;
-        private IMapper Mapper => mapper;
-
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -27,11 +26,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetById(string id)
         {
             var user = await UserService.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found." });
-            }
-
             return Ok(user);
         }
 
@@ -43,9 +37,9 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UserRequestDto userDto)
+        public async Task<IActionResult> Update([FromBody] UserRequestDto userDto, string id)
         {
-            await UserService.UpdateAsync(userDto);
+            await UserService.UpdateAsync(id, userDto);
             return NoContent();
         }
 

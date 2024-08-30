@@ -15,7 +15,7 @@ public class UserRepository(UserDao userDao) : IUserRepository
 
     public async Task CreateAsync(User entity) => await UserDao.CreateUser(entity);
 
-    public async Task UpdateAsync(User entity) => await UserDao.UpdateUserAsync(entity);
+    public async Task UpdateAsync(string id, User entity) => await UserDao.UpdateUserAsync(id, entity);
 
     public async Task DeleteAsync(string id) => await UserDao.DeleteUser(id);
 

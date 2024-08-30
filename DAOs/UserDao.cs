@@ -29,9 +29,9 @@ public class UserDao(AppDbContext context)
         await Context.SaveChangesAsync();
     }
     
-    public async Task UpdateUserAsync(User updatedUser)
+    public async Task UpdateUserAsync(string id, User updatedUser)
     {
-        var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == updatedUser.UserId);
+        var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
         if (existingUser == null)
         {
             throw new InvalidOperationException("User not found.");

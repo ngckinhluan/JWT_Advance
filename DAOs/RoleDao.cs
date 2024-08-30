@@ -26,17 +26,18 @@ public class RoleDao(AppDbContext context)
             var lastIdNumber = int.Parse(lastRole.RoleId.Substring(1));
             newIdNumber = lastIdNumber + 1;
         }
+
         role.RoleId = "R" + newIdNumber.ToString().PadLeft(5, '0');
         await Context.Roles.AddAsync(role);
         await Context.SaveChangesAsync();
     }
 
-    public async Task UpdateRoleAsync(Role updatedRole)
+    public async Task UpdateRoleAsync(string id, Role updatedRole)
     {
-        var existingRole = await Context.Roles.FirstOrDefaultAsync(x => x.RoleId == updatedRole.RoleId);
+        var existingRole = await Context.Roles.FirstOrDefaultAsync(x => x.RoleId == id && !x.IsDeleted);
         if (existingRole == null)
         {
-            throw new InvalidOperationException("Role not found.");
+            throw new InvalidOperationException($"Role with ID {updatedRole.RoleId} not found or is deleted.");
         }
         Context.Roles.Attach(existingRole);
         Context.Entry(existingRole).CurrentValues.SetValues(updatedRole);
@@ -52,6 +53,7 @@ public class RoleDao(AppDbContext context)
         {
             throw new InvalidOperationException("Role not found.");
         }
+
         role.IsDeleted = true;
         await Context.SaveChangesAsync();
     }

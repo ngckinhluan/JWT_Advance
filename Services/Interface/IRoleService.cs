@@ -10,7 +10,7 @@ public interface IRoleService
     Task<RoleResponseDto> GetByIdAsync(string id);
     Task<IEnumerable<RoleResponseDto?>?> GetAllAsync();
     Task CreateAsync(RoleRequestDto entity);
-    Task UpdateAsync(RoleRequestDto entity);
+    Task UpdateAsync(string id, RoleRequestDto entity);
     Task DeleteAsync(string id);
     Task<IEnumerable<RoleResponseDto?>?> FindAsync(Expression<Func<Role, bool>> query);
 }
