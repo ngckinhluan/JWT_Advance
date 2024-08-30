@@ -1,6 +1,8 @@
+using BusinessObjects.Entities;
+
 namespace Repositories.Interface;
 
-public interface IRoleRepository
+public interface IRoleRepository : IGenericRepository<Role>
 {
     
 }

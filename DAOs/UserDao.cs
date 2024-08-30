@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using BusinessObjects.Context;
 using BusinessObjects.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -28,11 +29,19 @@ public class UserDao(AppDbContext context)
         await Context.SaveChangesAsync();
     }
     
-    public async Task UpdateUser(User user)
+    public async Task UpdateUserAsync(User updatedUser)
     {
-        Context.Users.Update(user);
+        var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == updatedUser.UserId);
+        if (existingUser == null)
+        {
+            throw new InvalidOperationException("User not found.");
+        }
+        Context.Users.Attach(existingUser);
+        Context.Entry(existingUser).CurrentValues.SetValues(updatedUser);
+        Context.Entry(existingUser).Property(u => u.UserId).IsModified = false;
         await Context.SaveChangesAsync();
     }
+
     
     public async Task DeleteUser(string id)
     {
@@ -44,8 +53,8 @@ public class UserDao(AppDbContext context)
         }
     }
     
-    public async Task<User?> Find(Func<User, bool> predicate) => await Task.FromResult(Context.Users.FirstOrDefault(predicate));
-    
+    public async Task<IEnumerable<User?>> FindAsync(Expression<Func<User, bool>> predicate) =>
+        await Context.Users.Where(predicate).ToListAsync();    
 
     
 

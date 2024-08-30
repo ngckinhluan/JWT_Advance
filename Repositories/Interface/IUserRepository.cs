@@ -1,6 +1,8 @@
+using BusinessObjects.Entities;
+
 namespace Repositories.Interface;
 
-public interface IUserRepository
+public interface IUserRepository : IGenericRepository<User>
 {
     
 }
