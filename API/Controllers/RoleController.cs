@@ -50,7 +50,7 @@ namespace API.Controllers
         [HttpGet("find")]
         public async Task<IActionResult> Find([FromQuery] string filter)
         {
-            var roles = await RoleService.FindAsync(x => x.RoleName.Contains(filter) || x.Description.Contains(filter));
+            var roles = await RoleService.FindAsync(filter);
             return Ok(roles);
         }
     }

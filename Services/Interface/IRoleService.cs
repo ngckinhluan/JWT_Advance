@@ -12,5 +12,5 @@ public interface IRoleService
     Task CreateAsync(RoleRequestDto entity);
     Task UpdateAsync(string id, RoleRequestDto entity);
     Task DeleteAsync(string id);
-    Task<IEnumerable<RoleResponseDto?>?> FindAsync(Expression<Func<Role, bool>> query);
+    Task<IEnumerable<RoleResponseDto?>?> FindAsync(string searchTerms);
 }

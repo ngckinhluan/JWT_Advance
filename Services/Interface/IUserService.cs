@@ -12,5 +12,5 @@ public interface IUserService
     Task CreateAsync(UserRequestDto entity);
     Task UpdateAsync(string id, UserRequestDto entity);
     Task DeleteAsync(string id);
-    Task<IEnumerable<UserResponseDto?>?> FindAsync(Expression<Func<User, bool>> query);
+    Task<IEnumerable<UserResponseDto?>?> FindAsync(string searchTerms);
 }

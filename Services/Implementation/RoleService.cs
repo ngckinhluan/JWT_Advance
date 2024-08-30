@@ -39,10 +39,29 @@ public class RoleService(IRoleRepository repository, IMapper mapper) : IRoleServ
 
     public async Task DeleteAsync(string id) => await Repository.DeleteAsync(id);
 
-    public async Task<IEnumerable<RoleResponseDto?>?> FindAsync(Expression<Func<Role, bool>> query)
+    // public async Task<IEnumerable<RoleResponseDto?>?> FindAsync(Expression<Func<Role, bool>> query)
+    // {
+    //     var result = await Repository.FindAsync(query);
+    //     var response = Mapper.Map<IEnumerable<RoleResponseDto>>(result);
+    //     return response;
+    // }
+    public async Task<IEnumerable<RoleResponseDto?>?> FindAsync(string searchTerm)
     {
-        var result = await Repository.FindAsync(query);
-        var response = Mapper.Map<IEnumerable<RoleResponseDto>>(result);
-        return response;
+        var predicate = BuildSearchPredicate(searchTerm);
+        var roles = await Repository.FindAsync(predicate);
+        return Mapper.Map<IEnumerable<RoleResponseDto>>(roles);
+    }
+
+    private Expression<Func<Role, bool>> BuildSearchPredicate(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return role => !role.IsDeleted; 
+        }
+        searchTerm = searchTerm.ToLower(); 
+        return role => !role.IsDeleted &&
+                       (role.RoleId.ToLower().Contains(searchTerm) ||
+                        role.RoleName.ToLower().Contains(searchTerm) ||
+                        role.Description.ToLower().Contains(searchTerm));
     }
 }

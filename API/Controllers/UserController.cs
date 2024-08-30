@@ -53,9 +53,7 @@ namespace API.Controllers
         [HttpGet("find")]
         public async Task<IActionResult> Find([FromQuery] string filter)
         {
-            Expression<Func<User, bool>> query = user =>
-                user.UserName.Contains(filter) || user.Email.Contains(filter) || user.FullName.Contains(filter);
-            var users = await UserService.FindAsync(query);
+            var users = await UserService.FindAsync(filter);
             return Ok(users);
         }
     }
