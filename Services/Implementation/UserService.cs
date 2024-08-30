@@ -45,12 +45,36 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         return Mapper.Map<IEnumerable<UserResponseDto>>(roles);
     }
 
+    public Task<User?> Login(LoginRequestDto loginRequestDto)
+    {
+        var user = GetUserByEmailAndPassword(loginRequestDto.Email, loginRequestDto.Password);
+        if (user == null)
+        {
+            throw new InvalidOperationException("User not found");
+        }
+        return user;
+    }
+
+    public async Task<User?> GetUserByEmailAndPassword(string email, string password)
+    {
+        var result = await Repository.FindAsync(u => u.Email == email && u.Password == password);
+        return result.FirstOrDefault();
+    }
+
+    public async Task<IEnumerable<UserResponseDto>?>? GetByUserNameAndPassWordAsync(string userName, string passWord)
+    {
+        var result = await Repository.FindAsync(u => u.UserName == userName && u.Password == passWord);
+        var user = Mapper.Map<IEnumerable<UserResponseDto>>(result);
+        return user;
+    }
+
     private Expression<Func<User, bool>> BuildSearchPredicate(string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
         {
             return user => !user.IsDeleted;
         }
+
         return user => user.Email.Contains(searchTerm) || user.UserId.Contains(searchTerm) ||
                        user.FullName.Contains(searchTerm) || user.Password.Contains(searchTerm) ||
                        user.Password.Contains(searchTerm);

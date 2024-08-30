@@ -1,5 +1,7 @@
 using System.Collections;
 using DAOs;
+using Management.Implementation;
+using Management.Interface;
 using Repositories.Implementation;
 using Repositories.Interface;
 using Services.Implementation;
@@ -24,6 +26,11 @@ public static class ServiceExtension
         #region Services
         serviceCollection.AddScoped<IUserService, UserService>();
         serviceCollection.AddScoped<IRoleService, RoleService>();
+        serviceCollection.AddScoped<ITokenService, TokenService>();
+        #endregion
+
+        #region Management
+        serviceCollection.AddScoped<IUserManagement, UserManagement>();
         #endregion
 
         #region CORS

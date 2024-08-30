@@ -13,4 +13,7 @@ public interface IUserService
     Task UpdateAsync(string id, UserRequestDto entity);
     Task DeleteAsync(string id);
     Task<IEnumerable<UserResponseDto?>?> FindAsync(string searchTerms);
+    Task<User?> Login(LoginRequestDto loginRequestDto);
+    Task<User?> GetUserByEmailAndPassword(string email, string password);
+    
 }

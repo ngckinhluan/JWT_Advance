@@ -26,7 +26,6 @@ public class RoleDao(AppDbContext context)
             var lastIdNumber = int.Parse(lastRole.RoleId.Substring(1));
             newIdNumber = lastIdNumber + 1;
         }
-
         role.RoleId = "R" + newIdNumber.ToString().PadLeft(5, '0');
         await Context.Roles.AddAsync(role);
         await Context.SaveChangesAsync();
