@@ -1,17 +1,20 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using BusinessObjects.Context;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Services.Interface;
 
 namespace Services.Implementation;
 
-public class UserService(IUserRepository repository, IMapper mapper) : IUserService
+public class UserService(AppDbContext context, IUserRepository repository, IMapper mapper) : IUserService
 {
     private IUserRepository Repository => repository;
     private IMapper Mapper => mapper;
+    private AppDbContext Context => context;
 
     public async Task<UserResponseDto> GetByIdAsync(string id)
     {
@@ -27,10 +30,15 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         return response;
     }
 
-    public Task CreateAsync(UserRequestDto entity)
+    public async Task CreateAsync(UserRequestDto entity)
     {
+        var existingUser = await Repository.GetUserByEmail(entity.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("An account with this email already exists.");
+        }
         var user = Mapper.Map<User>(entity);
-        return Repository.CreateAsync(user);
+        await Repository.CreateAsync(user);
     }
 
     public async Task UpdateAsync(string id, UserRequestDto entity) =>
@@ -45,21 +53,56 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         return Mapper.Map<IEnumerable<UserResponseDto>>(roles);
     }
 
-    public Task<User?> Login(LoginRequestDto loginRequestDto)
+    public async Task<User?> Login(LoginRequestDto loginRequestDto)
     {
-        var user = GetUserByEmailAndPassword(loginRequestDto.Email, loginRequestDto.Password);
+        var user = await Repository.GetUserByEmailAndPassword(loginRequestDto.Email, loginRequestDto.Password);
         if (user == null)
         {
             throw new InvalidOperationException("User not found");
         }
+
+        if (user.IsBan)
+        {
+            throw new InvalidOperationException("This account is banned due to multiple failed login attempts.");
+        }
+
+        if (loginRequestDto.Password != user.Password)
+        {
+            user.FailedLoginAttempts++;
+            if (user.FailedLoginAttempts >= 5)
+            {
+                await BanUser(user.UserId);
+            }
+            else
+            {
+                await Repository.UpdateAsync(user.UserId, user);
+            }
+
+            throw new InvalidOperationException("Invalid credentials");
+        }
+        user.FailedLoginAttempts = 0;
+        await Repository.UpdateAsync(user.UserId, user);
         return user;
     }
-
+    
+    public async Task RegisterUser(RegisterRequestDto userRequestDto)
+    {
+        var existingUser = await Repository.GetUserByEmail(userRequestDto.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("An account with this email already exists.");
+        }
+        var newUser = Mapper.Map<User>(userRequestDto);
+        await Repository.CreateAsync(newUser);
+    }
     public async Task<User?> GetUserByEmailAndPassword(string email, string password)
     {
-        var result = await Repository.FindAsync(u => u.Email == email && u.Password == password);
-        return result.FirstOrDefault();
+        var result = await Repository.GetUserByEmailAndPassword(email, password);
+        return result;
     }
+
+    public async Task<User?> BanUser(string id) => await Repository.BanUser(id);
+    public async Task<User?> UnBanUser(string id) => await Repository.UnBanUser(id);
 
     public async Task<IEnumerable<UserResponseDto>?>? GetByUserNameAndPassWordAsync(string userName, string passWord)
     {
@@ -74,7 +117,6 @@ public class UserService(IUserRepository repository, IMapper mapper) : IUserServ
         {
             return user => !user.IsDeleted;
         }
-
         return user => user.Email.Contains(searchTerm) || user.UserId.Contains(searchTerm) ||
                        user.FullName.Contains(searchTerm) || user.Password.Contains(searchTerm) ||
                        user.Password.Contains(searchTerm);

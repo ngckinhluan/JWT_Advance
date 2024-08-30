@@ -13,8 +13,8 @@ public class User
     public required string Password { get; set; } 
     public string? ImageUrl { get; set; }
     public bool IsDeleted { get; set; }
-    
-    public int LoginAttempts { get; set; }
+    public int FailedLoginAttempts { get; set; }
+    public bool IsBan { get; set; } = false;
 
     // Navigation properties
     public virtual Role? Role { get; set; }

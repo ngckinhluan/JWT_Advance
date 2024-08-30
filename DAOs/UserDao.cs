@@ -9,10 +9,17 @@ public class UserDao(AppDbContext context)
 {
     private AppDbContext Context => context;
     
-    public async Task<IEnumerable<User?>?> GetAllUsers() => await Context.Users.Where(u => !u.IsDeleted).ToListAsync();
-
-    public async Task<User?> GetUserById(string id) => await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
-    
+    public async Task<IEnumerable<User?>?> GetAllUsers() => await Context.Users.Where(u => !u.IsDeleted && !u.IsBan).ToListAsync();
+    public async Task<User?> GetUserById(string id) => await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted && !x.IsBan);
+    public async Task<User?> GetUserByEmailAndPassword(string email, string password)
+    {
+       
+        var result = await Context.Users
+            .Include(u => u.Role) 
+            .Where(u => u.Email == email && u.Password == password && !u.IsDeleted && !u.IsBan)
+            .FirstOrDefaultAsync();
+        return result;
+    }
     public async Task CreateUser(User user)
     {
         var lastUser = await Context.Users
@@ -31,7 +38,7 @@ public class UserDao(AppDbContext context)
     
     public async Task UpdateUserAsync(string id, User updatedUser)
     {
-        var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
+        var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted && !x.IsBan);
         if (existingUser == null)
         {
             throw new InvalidOperationException($"User {id}  not found.");
@@ -43,6 +50,9 @@ public class UserDao(AppDbContext context)
         existingUser.ImageUrl = updatedUser.ImageUrl;
         await Context.SaveChangesAsync();
     }
+    
+    public async Task<User?> GetUserByEmail(string email) =>
+        await Context.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted && !x.IsBan);
 
     
     public async Task DeleteUser(string id)
@@ -56,7 +66,29 @@ public class UserDao(AppDbContext context)
     }
     
     public async Task<IEnumerable<User?>> FindAsync(Expression<Func<User, bool>> predicate) =>
-        await Context.Users.Where(predicate).ToListAsync();    
+        await Context.Users.Where(predicate).ToListAsync();
+    
+    public async Task<User?> BanUser(string id)
+    {
+        var user = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
+        if (user != null)
+        {
+            user.IsBan = true;
+            await Context.SaveChangesAsync();
+        }
+        return user;
+    }
+    
+    public async Task<User?> UnBanUser(string id)
+    {
+        var user = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
+        if (user != null)
+        {
+            user.IsBan = false;
+            await Context.SaveChangesAsync();
+        }
+        return user;
+    }
 
     
 

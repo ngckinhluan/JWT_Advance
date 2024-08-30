@@ -15,5 +15,8 @@ public interface IUserService
     Task<IEnumerable<UserResponseDto?>?> FindAsync(string searchTerms);
     Task<User?> Login(LoginRequestDto loginRequestDto);
     Task<User?> GetUserByEmailAndPassword(string email, string password);
-    
+    Task<User?> BanUser(string id);
+    Task<User?> UnBanUser(string id);
+    Task RegisterUser(RegisterRequestDto userRequestDto);
+
 }

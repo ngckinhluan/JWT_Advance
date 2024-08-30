@@ -18,7 +18,7 @@ namespace API.Controllers
     {
         private IUserService UserService => userService;
         private IUserManagement UserManagement => userManagement;
-        
+
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> GetAll()
@@ -50,7 +50,7 @@ namespace API.Controllers
             await UserService.UpdateAsync(id, userDto);
             return NoContent();
         }
-        
+
         [Authorize(Roles = "Admin, Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
@@ -66,13 +66,35 @@ namespace API.Controllers
             var users = await UserService.FindAsync(filter);
             return Ok(users);
         }
-        
-        [Authorize(Roles = "Admin, Manager")]
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
             var user = await UserManagement.Login(loginRequestDto);
             if (user == null) return Unauthorized();
+            return Ok(user);
+        }
+        
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp([FromBody] RegisterRequestDto userRequestDto)
+        {
+            await UserService.RegisterUser(userRequestDto);
+            return Ok(new { messsage = "User created successfully." });
+        }
+
+        [Authorize(Roles = "Admin, Manager")]
+        [HttpPost("ban/{id}")]
+        public async Task<IActionResult> BanUser(string id)
+        {
+            var user = await UserService.BanUser(id);
+            return Ok(user);
+        }
+
+        [Authorize(Roles = "Admin, Manager")]
+        [HttpPost("unban/{id}")]
+        public async Task<IActionResult> UnBanUser(string id)
+        {
+            var user = await UserService.UnBanUser(id);
             return Ok(user);
         }
     }

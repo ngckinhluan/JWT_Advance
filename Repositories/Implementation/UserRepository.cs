@@ -19,6 +19,13 @@ public class UserRepository(UserDao userDao) : IUserRepository
 
     public async Task DeleteAsync(string id) => await UserDao.DeleteUser(id);
 
-    public async Task<IEnumerable<User?>?> FindAsync(Expression<Func<User, bool>> query) => await UserDao.FindAsync(query);
+    public async Task<IEnumerable<User?>?> FindAsync(Expression<Func<User, bool>> query) =>
+        await UserDao.FindAsync(query);
+
+    public async Task<User?> GetUserByEmailAndPassword(string email, string password) =>
+        await UserDao.GetUserByEmailAndPassword(email, password);
+    public async Task<User?> UnBanUser(string id) => await UserDao.UnBanUser(id);
+    public async Task<User?> BanUser(string id) => await UserDao.BanUser(id);
+    public async Task<User?> GetUserByEmail(string email) => await UserDao.GetUserByEmail(email);
 
 }
