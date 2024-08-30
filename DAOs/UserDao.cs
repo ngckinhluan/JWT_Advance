@@ -34,11 +34,13 @@ public class UserDao(AppDbContext context)
         var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted);
         if (existingUser == null)
         {
-            throw new InvalidOperationException("User not found.");
+            throw new InvalidOperationException($"User {id}  not found.");
         }
-        Context.Users.Attach(existingUser);
-        Context.Entry(existingUser).CurrentValues.SetValues(updatedUser);
-        Context.Entry(existingUser).Property(u => u.UserId).IsModified = false;
+        existingUser.UserName = updatedUser.UserName;
+        existingUser.FullName = updatedUser.FullName;
+        existingUser.Email = updatedUser.Email;
+        existingUser.Password = updatedUser.Password;
+        existingUser.ImageUrl = updatedUser.ImageUrl;
         await Context.SaveChangesAsync();
     }
 
