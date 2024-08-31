@@ -4,9 +4,7 @@ using BusinessObjects.Context;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
-using BusinessObjects.Other;
 using BusinessObjects.Pagination;
-using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Services.Interface;
 
@@ -127,13 +125,6 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
 
     public async Task<User?> BanUser(string id) => await Repository.BanUser(id);
     public async Task<User?> UnBanUser(string id) => await Repository.UnBanUser(id);
-
-    public async Task<IEnumerable<UserResponseDto>?>? GetByUserNameAndPassWordAsync(string userName, string passWord)
-    {
-        var result = await Repository.FindAsync(u => u.UserName == userName && u.Password == passWord);
-        var user = Mapper.Map<IEnumerable<UserResponseDto>>(result);
-        return user;
-    }
 
     private Expression<Func<User, bool>> BuildSearchPredicate(string searchTerm)
     {
