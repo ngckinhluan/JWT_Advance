@@ -101,19 +101,9 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
 
     public async Task<PagedList<UserResponseDto>> GetUsersPagingAsync(PagingParameters pagingParameters)
     {
-        var source = Context.Users
-            .Where(u => !u.IsDeleted && !u.IsBan)
-            .AsQueryable();
-        var pagedList = await Task.FromResult(
-            PagedList<User>.ToPagedList(source, pagingParameters.PageNumber, pagingParameters.PageSize)
-        );
-        var pagedListDtos = new PagedList<UserResponseDto>(
-            Mapper.Map<List<UserResponseDto>>(pagedList),
-            pagedList.TotalCount,
-            pagedList.CurrentPage,
-            pagedList.PageSize
-        );
-        return pagedListDtos;
+        var source = await Repository.GetUsersPagingAsync(pagingParameters);
+        return new PagedList<UserResponseDto>(Mapper.Map<List<UserResponseDto>>(source), source.TotalCount,
+            source.CurrentPage, source.PageSize);
     }
 
 

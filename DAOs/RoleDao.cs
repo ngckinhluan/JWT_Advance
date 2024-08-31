@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BusinessObjects.Context;
 using BusinessObjects.Entities;
+using BusinessObjects.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAOs;
@@ -14,6 +15,15 @@ public class RoleDao(AppDbContext context)
 
     public async Task<Role?> GetRoleByIdAsync(string id) =>
         await Context.Roles.FirstOrDefaultAsync(x => x.RoleId == id && !x.IsDeleted);
+    
+
+    public async Task<PagedList<Role>> GetRolesPagingAsync(PagingParameters pagingParameters)
+    {
+        var query = Context.Roles.Where(r => !r.IsDeleted);
+        var pagedList = PagedList<Role>.ToPagedList(query, pagingParameters.PageNumber, pagingParameters.PageSize);
+        return await Task.FromResult(pagedList);
+    }
+
 
     public async Task CreateRoleAsync(Role role)
     {

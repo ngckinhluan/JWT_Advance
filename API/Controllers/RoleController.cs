@@ -1,5 +1,6 @@
 using AutoMapper;
 using BusinessObjects.DTO.Request;
+using BusinessObjects.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interface;
@@ -20,6 +21,15 @@ namespace API.Controllers
             var roles = await RoleService.GetAllAsync();
             return Ok(roles);
         }
+        
+        [Authorize(Roles = "Admin, Manager")]
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetRolesPaging([FromQuery] PagingParameters pagingParameters)
+        {
+            var roles = await RoleService.GetRolesPagingAsync(pagingParameters);
+            return Ok(roles);
+        }
+        
         [Authorize(Roles = "Admin, Manager")]
         [HttpGet("{id}", Name = "RoleById")]
         public async Task<IActionResult> GetById(string id)

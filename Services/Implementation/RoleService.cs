@@ -3,6 +3,7 @@ using AutoMapper;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using BusinessObjects.Pagination;
 using Repositories.Implementation;
 using Repositories.Interface;
 using Services.Interface;
@@ -52,6 +53,11 @@ public class RoleService(IRoleRepository repository, IMapper mapper) : IRoleServ
         return Mapper.Map<IEnumerable<RoleResponseDto>>(roles);
     }
 
+    public async Task<PagedList<RoleResponseDto>> GetRolesPagingAsync(PagingParameters pagingParameters)
+    {
+        var roles = await Repository.GetRolesPagingAsync(pagingParameters);
+        return new PagedList<RoleResponseDto>( Mapper.Map<List<RoleResponseDto>>(roles), roles.TotalCount, roles.CurrentPage, roles.PageSize);
+    }
     private Expression<Func<Role, bool>> BuildSearchPredicate(string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
