@@ -5,6 +5,7 @@ using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
 using BusinessObjects.Other;
+using BusinessObjects.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Services.Interface;
@@ -100,19 +101,23 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
         await Repository.CreateAsync(newUser);
     }
 
-    public async Task<PagingResponse> GetUsersPaging(int page, int limit)
+    public async Task<PagedList<UserResponseDto>> GetUsersPagingAsync(PagingParameters pagingParameters)
     {
-        var users = await Repository.GetUsersPaging(page, limit);
-        var response = new PagingResponse
-        {
-            PageNumber = page,
-            PageSize = limit,
-            TotalRecord = users.Item1,
-            TotalPage = users.Item2,
-            Data = Mapper.Map<IEnumerable<UserResponseDto>>(users.Item3)
-        };
-        return response;
+        var source = Context.Users
+            .Where(u => !u.IsDeleted && !u.IsBan)
+            .AsQueryable();
+        var pagedList = await Task.FromResult(
+            PagedList<User>.ToPagedList(source, pagingParameters.PageNumber, pagingParameters.PageSize)
+        );
+        var pagedListDtos = new PagedList<UserResponseDto>(
+            Mapper.Map<List<UserResponseDto>>(pagedList),
+            pagedList.TotalCount,
+            pagedList.CurrentPage,
+            pagedList.PageSize
+        );
+        return pagedListDtos;
     }
+
 
     public async Task<User?> GetUserByEmailAndPassword(string email, string password)
     {

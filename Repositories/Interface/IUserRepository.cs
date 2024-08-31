@@ -1,4 +1,5 @@
 using BusinessObjects.Entities;
+using BusinessObjects.Pagination;
 
 namespace Repositories.Interface;
 
@@ -8,5 +9,5 @@ public interface IUserRepository : IGenericRepository<User>
     Task<User?> UnBanUser(string id);
     Task<User?> BanUser(string id);
     Task<User?> GetUserByEmail(string email);
-    Task<(int, int, IEnumerable<User>)> GetUsersPaging(int page, int limit);
+    Task<PagedList<User>> GetUsersPagingAsync(PagingParameters pagingParameters);
 }

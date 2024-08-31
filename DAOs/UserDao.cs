@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BusinessObjects.Context;
 using BusinessObjects.Entities;
+using BusinessObjects.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAOs;
@@ -41,18 +42,6 @@ public class UserDao(AppDbContext context)
         await Context.SaveChangesAsync();
     }
 
-    public async Task<(int, int, IEnumerable<User>)> GetUsersPaging(int page, int limit)
-    {
-        var users = await Context.Users
-            .Where(u => !u.IsDeleted && !u.IsBan)
-            .Skip((page - 1) * limit)
-            .Take(limit)
-            .ToListAsync();
-        var total = await Context.Users.CountAsync(u => !u.IsDeleted && !u.IsBan);
-        var totalPages = total / limit + (total % limit == 0 ? 0 : 1);
-        return (total, totalPages, users);
-    }
-
     public async Task UpdateUserAsync(string id, User updatedUser)
     {
         var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDeleted && !x.IsBan);
@@ -70,7 +59,7 @@ public class UserDao(AppDbContext context)
     }
 
     public async Task<User?> GetUserByEmail(string email) =>
-        await Context.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted && !x.IsBan);
+        await Context.Users.Include(u => u.Role).FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted && !x.IsBan);
 
 
     public async Task DeleteUser(string id)
@@ -109,4 +98,15 @@ public class UserDao(AppDbContext context)
 
         return user;
     }
+
+    public async Task<PagedList<User>> GetUsersPagingAsync(PagingParameters pagingParameters)
+    {
+        var source = Context.Users
+            .Where(u => !u.IsDeleted && !u.IsBan)
+            .AsQueryable();
+        return await Task.FromResult(
+            PagedList<User>.ToPagedList(source, pagingParameters.PageNumber, pagingParameters.PageSize)
+        );
+    }
+
 }

@@ -3,6 +3,7 @@ using AutoMapper;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using BusinessObjects.Pagination;
 using Management.Implementation;
 using Management.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -29,9 +30,9 @@ namespace API.Controllers
         
         [HttpGet("paging")]
         [Authorize(Roles = "Admin, Manager")]
-        public async Task<IActionResult> GetUsersPaging(int page, int limit)
+        public async Task<IActionResult> GetUsersPaging([FromQuery] PagingParameters pagingParameters)
         {
-            var users = await UserService.GetUsersPaging(page, limit);
+            var users = await UserService.GetUsersPagingAsync(pagingParameters);
             return Ok(users);
         }
 
