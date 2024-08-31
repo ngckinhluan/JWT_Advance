@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using BusinessObjects.Other;
 
 namespace Services.Interface;
 
@@ -18,5 +19,6 @@ public interface IUserService
     Task<User?> BanUser(string id);
     Task<User?> UnBanUser(string id);
     Task RegisterUser(RegisterRequestDto userRequestDto);
+    Task<PagingResponse> GetUsersPaging(int page, int limit);
 
 }

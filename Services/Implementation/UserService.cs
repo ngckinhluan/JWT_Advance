@@ -4,6 +4,7 @@ using BusinessObjects.Context;
 using BusinessObjects.DTO.Request;
 using BusinessObjects.DTO.Response;
 using BusinessObjects.Entities;
+using BusinessObjects.Other;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Services.Interface;
@@ -37,6 +38,7 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
         {
             throw new InvalidOperationException("An account with this email already exists.");
         }
+
         var user = Mapper.Map<User>(entity);
         await Repository.CreateAsync(user);
     }
@@ -55,7 +57,7 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
 
     public async Task<User?> Login(LoginRequestDto loginRequestDto)
     {
-        var user = await Repository.GetUserByEmailAndPassword(loginRequestDto.Email, loginRequestDto.Password);
+        var user = await Repository.GetUserByEmail(loginRequestDto.Email);
         if (user == null)
         {
             throw new InvalidOperationException("User not found");
@@ -80,11 +82,12 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
 
             throw new InvalidOperationException("Invalid credentials");
         }
+
         user.FailedLoginAttempts = 0;
         await Repository.UpdateAsync(user.UserId, user);
         return user;
     }
-    
+
     public async Task RegisterUser(RegisterRequestDto userRequestDto)
     {
         var existingUser = await Repository.GetUserByEmail(userRequestDto.Email);
@@ -92,9 +95,25 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
         {
             throw new InvalidOperationException("An account with this email already exists.");
         }
+
         var newUser = Mapper.Map<User>(userRequestDto);
         await Repository.CreateAsync(newUser);
     }
+
+    public async Task<PagingResponse> GetUsersPaging(int page, int limit)
+    {
+        var users = await Repository.GetUsersPaging(page, limit);
+        var response = new PagingResponse
+        {
+            PageNumber = page,
+            PageSize = limit,
+            TotalRecord = users.Item1,
+            TotalPage = users.Item2,
+            Data = Mapper.Map<IEnumerable<UserResponseDto>>(users.Item3)
+        };
+        return response;
+    }
+
     public async Task<User?> GetUserByEmailAndPassword(string email, string password)
     {
         var result = await Repository.GetUserByEmailAndPassword(email, password);
@@ -117,6 +136,7 @@ public class UserService(AppDbContext context, IUserRepository repository, IMapp
         {
             return user => !user.IsDeleted;
         }
+
         return user => user.Email.Contains(searchTerm) || user.UserId.Contains(searchTerm) ||
                        user.FullName.Contains(searchTerm) || user.Password.Contains(searchTerm) ||
                        user.Password.Contains(searchTerm);

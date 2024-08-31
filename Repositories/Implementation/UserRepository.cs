@@ -27,5 +27,9 @@ public class UserRepository(UserDao userDao) : IUserRepository
     public async Task<User?> UnBanUser(string id) => await UserDao.UnBanUser(id);
     public async Task<User?> BanUser(string id) => await UserDao.BanUser(id);
     public async Task<User?> GetUserByEmail(string email) => await UserDao.GetUserByEmail(email);
-
+    public async Task<(int, int, IEnumerable<User>)> GetUsersPaging(int page, int limit)
+    {
+       var (total, totalPages, users) = await UserDao.GetUsersPaging(page, limit);
+       return (total, totalPages, users);
+    }
 }

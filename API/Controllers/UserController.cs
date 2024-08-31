@@ -26,6 +26,14 @@ namespace API.Controllers
             var users = await UserService.GetAllAsync();
             return Ok(users);
         }
+        
+        [HttpGet("paging")]
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IActionResult> GetUsersPaging(int page, int limit)
+        {
+            var users = await UserService.GetUsersPaging(page, limit);
+            return Ok(users);
+        }
 
         [HttpGet("{id}", Name = "UserById")]
         [Authorize(Roles = "Admin, Manager")]
